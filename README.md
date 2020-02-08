@@ -1,3 +1,3 @@
 # Companion
 
-![Alt text](img/companion.png?raw=true "Title")
+![Alt text](img/companionL.png?raw=true "Title")
