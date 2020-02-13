@@ -13,6 +13,23 @@ const client2 = new textToSpeech.TextToSpeechClient({
   projectId: 'streaming-speech-sample',
   keyFilename: './keyfile.json'
 });
+
+const { dockStart } = require('@nlpjs/basic');
+
+(async () => {
+  const dock = await dockStart({ use: ['Basic']});
+  const nlp = dock.get('nlp');
+  nlp.addLanguage('it');
+  // Adds the utterances and intents for the NLP
+  nlp.addDocument('it','ciao','saluti.ciao');
+  
+  // Train also the NLG
+  nlp.addAnswer('it', 'saluti.ciao', 'hehe');  await nlp.train();
+  const response = await nlp.process('it', 'ciao');
+  console.log(response);
+})();
+
+
 async function quickStart(text) {
 
   // Construct the request
