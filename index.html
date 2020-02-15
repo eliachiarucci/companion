@@ -1,16 +1,117 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
 		<style rel="stylesheet" type="text/css">
+			@font-face {
+				font-family: 'Lato', sans-serif;
+				src: url('./fonts/Lato-Regular.ttf');
+				font-weight: normal;
+				font-style: normal;
+			}
+			@font-face {
+				font-family: 'Lato', sans-serif;
+				src: url('./fonts/Lato-Bold.ttf');
+				font-weight: bold;
+				font-style: normal;
+			}
 			body {
 				margin: 0;
 				padding: 0;
 				background: linear-gradient(45deg, rgba(33,36,255,0.91) 0%, rgba(255,13,66,0.91) 100%);
 				height: 100vh;
+				display: flex;
+				font-family: 'Lato', sans-serif;
+
+			}
+			.main {
+				padding: 60px 40px 40px 40px;
+				flex: 1;
+			}
+			.container_vertical{
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				justify-content: space-between;
+			}
+			.logo {
+				    background-image: url(./img/companion_logo.png);
+				    height: 280px;
+				    background-size: contain;
+				    background-repeat: no-repeat;
+				    background-position: center;
+			}
+			.container_body{
+				display: flex;
+				flex-direction: column;
+			}
+			.text_container {
+				text-align: center;
+				color: white;
+				width: 55%;
+				align-self: center;
+			}
+			.text_title {
+				font-size: 36px;
+				letter-spacing: 3px;
+			}
+			.text_corpus {
+				font-size:20px;
+			}
+			.input_container {
+				display: flex;
+				justify-content: center;
+			}
+			.input {
+				width: 80%;
+				align-self: center;
+				height: 25px;
+				border-radius: 5px;
+				border: unset;
+				box-shadow: unset;
+				outline: 0;
+				padding: 5px;
+				font-size: 20px;
+				letter-spacing: 1px;
+				text-align: center;
+				box-shadow: 5px 5px 16px #555;
+			}
+			.button_container {
+				display: flex;
+				justify-content: center;
+				font-family: 'Lato', sans-serif;
+				font-weight: bold;
+			}
+			.button {
+				align-self: center;
+				width: 50%;
+				height: 40px;
+				border: 0;
+				border-radius: 7px;
+				font-size: 18px;
+				letter-spacing: 3px;
+				font-weight: bold;
+				color: rgb(167,48,112);
+				box-shadow: 5px 5px 15px #454545;
+				transition: 0.3s;
+			}
+			.button:hover{
+				cursor: pointer;
+			}
+			spacer {
+				padding: 0;
+				margin: 0;
+				border: 0;
+				height: 50px;
 			}
 		</style>
 	</head>
 	<body>
+		<div id='main' class='main'>
+
+
+		</div>
+
 
 		<script>
 
@@ -20,6 +121,20 @@
 
 
 
+			function load_screen(screen, introduction) {
+				if(introduction != undefined) {
+					introduction = '/' + introduction; 
+				} else {
+					introduction = '';
+				}
+				var screen = './screens' + introduction + '/' + screen + '.html';
+				fetch(screen)
+					.then(data => data.text())
+					.then(html => document.getElementById('main').innerHTML = html);
+			}
+
+
+			load_screen('name','introduction');
 
 
 			const fs = require('fs');
