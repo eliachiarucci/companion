@@ -3,18 +3,19 @@ const { app, BrowserWindow } = require('electron')
 function createWindow () {
   // Crea la finestra del browser
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 450,
+    height: 800,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    resizable: false
   })
 
   // and load the index.html of the app.
   win.loadFile('index.html')
 
   // Apre il Pannello degli Strumenti di Sviluppo.
-  win.webContents.openDevTools()
+  win.webContents.openDevTools({mode: 'detach'})
 }
 
 // This method will be called when Electron has finished
@@ -60,21 +61,22 @@ const client2 = new textToSpeech.TextToSpeechClient({
   keyFilename: './keyfile.json'
 });
 
+
+
+
+
 const { dockStart } = require('@nlpjs/basic');
 
 (async () => {
   const dock = await dockStart({ use: ['Basic']});
   const nlp = dock.get('nlp');
-  nlp.addLanguage('it');
   // Adds the utterances and intents for the NLP
-  nlp.addDocument('it','ciao','saluti.ciao');
-  
-  // Train also the NLG
-  nlp.addAnswer('it', 'saluti.ciao', 'hehe');  await nlp.train();
-  const response = await nlp.process('it', 'ciao');
+  await nlp.addCorpus('./corpus.json');
+  await nlp.train();  // Train also the NLG
+
+  const response = await nlp.process('en', 'Who are you');
   console.log(response);
 })();
-
 
 async function quickStart(text) {
 
