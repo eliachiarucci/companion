@@ -71,7 +71,7 @@ const { dockStart } = require('@nlpjs/basic');
   const dock = await dockStart({ use: ['Basic']});
   const nlp = dock.get('nlp');
   // Adds the utterances and intents for the NLP
-  await nlp.addCorpus('./corpus.json');
+  await nlp.addCorpus('./nlp_corpuses/corpus.json');
   await nlp.train();  // Train also the NLG
 
   const response = await nlp.process('en', 'Who are you');
@@ -101,8 +101,8 @@ async function quickStart(text) {
 }
 
 const hotwords = [
-    {file: './ei mario.pmdl', hotword: 'ei mario'},
-    {file: './senti mario.pmdl', hotword: 'senti mario'},
+    {file: './voice_models/ei mario.pmdl', hotword: 'ei mario'},
+    {file: './voice_models/senti mario.pmdl', hotword: 'senti mario'},
     ]
 
 const language = 'it-IT';

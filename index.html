@@ -1,43 +1,56 @@
-<head>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background: linear-gradient(45deg, rgba(33,36,255,0.91) 0%, rgba(255,13,66,0.91) 100%);
-		}
-	</style>
-</head>
-<body>
-	<script>
-		const fs = require('fs');
-		
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<style rel="stylesheet" type="text/css">
+			body {
+				margin: 0;
+				padding: 0;
+				background: linear-gradient(45deg, rgba(33,36,255,0.91) 0%, rgba(255,13,66,0.91) 100%);
+				height: 100vh;
+			}
+		</style>
+	</head>
+	<body>
 
-function addUtterance(intent, utterance) {
-	let rawdata = fs.readFileSync('./corpus.json');
-	let student = JSON.parse(rawdata);
-	console.log(student);
-	let test = student.data.findIndex(x => x.intent == intent);
-	student.data[test].utterances.push(utterance);
-	console.log(student.data[test].utterances);
-	fs.writeFileSync('./corpus.json', JSON.stringify(student));
-}
-
-function removeUtterance(intent, utterance) {
-	let rawdata = fs.readFileSync('./corpus.json');
-	let student = JSON.parse(rawdata);
-	console.log(student);
-	let test = student.data.findIndex(x => x.intent == intent);
-	student.data[test].utterances = student.data[test].utterances.filter(function(item) {
-		return item != utterance;
-	});
-
-	console.log(student.data[test].utterances);
-	fs.writeFileSync('./corpus.json', JSON.stringify(student));
-}
-
-addUtterance('agent.age','how old');
-removeUtterance('agent.age', 'how old');
+		<script>
 
 
-	</script>
-</body>
+
+
+
+
+
+
+
+			const fs = require('fs');
+			
+
+	function addUtterance(intent, utterance) {
+		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+		let student = JSON.parse(rawdata);
+		console.log(student);
+		let test = student.data.findIndex(x => x.intent == intent);
+		student.data[test].utterances.push(utterance);
+		console.log(student.data[test].utterances);
+		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
+	}
+
+	function removeUtterance(intent, utterance) {
+		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+		let student = JSON.parse(rawdata);
+		console.log(student);
+		let test = student.data.findIndex(x => x.intent == intent);
+		student.data[test].utterances = student.data[test].utterances.filter(function(item) {
+			return item != utterance;
+		});
+		console.log(student.data[test].utterances);
+		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
+	}
+
+	addUtterance('agent.age','how old');
+	removeUtterance('agent.age', 'how old');
+
+
+		</script>
+	</body>
+</html>
