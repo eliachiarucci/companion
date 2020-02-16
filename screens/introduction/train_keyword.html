@@ -1,0 +1,141 @@
+		<div class="container_vertical">
+			<div class='logo'>
+			</div>
+
+
+			<div class='container_body'>
+				<div class='text_container'>
+					<div class='text_title'>
+						
+					</div>
+
+					<div class='text_corpus'>
+						Insegna a <a class='get_name'></a> a riconoscere la tua voce. <br>
+						Ripeti "<a class='get_keyword'></a>" 3 volte, tieni premuto il pulsante mentre pronunci la keyword.
+					</div>
+				</div>
+
+				<br>
+				
+				<div class='input_container' style='flex-direction: column'>
+					<div style='display:flex; flex-direction: column; justify-content: center; border: 3px solid white; border-radius: 50%; height: 135px; width: 135px; align-self: center'>
+						<div style='width: 50%; display: flex; flex-direction: row; align-self: center; justify-content: space-around;'>
+							<div style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
+							<div style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
+							<div style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class='button_container' style='flex-direction: column'>
+				<button id='record_button' class='button'>REGISTRA <a class='get_rec_number'></a>/3</button>
+				<a style='align-self: center; color: white; margin-top: 5px;'>(Tieni premuto)</a>
+			</div>
+
+		</div>
+
+		<script>
+
+			populate();
+
+			
+
+			document.getElementById('record_button').addEventListener('mousedown', function() {
+				ipcRenderer.send('start_recording', rec_number);	
+				
+			})
+			document.getElementById('record_button').addEventListener('mouseup', function() {
+				ipcRenderer.send('stop_recording');
+				if(rec_number < 3) {
+					rec_number = rec_number + 1;
+				} else {
+					send_keywords();
+				}
+				
+				populate();
+			})
+
+			function send_keywords() {
+				var data = {
+					"name": temp_keyword,
+					"age_group" : '20_29',
+					"gender" : 'M',
+					"language": 'it',
+					"microphone": 'macbook',
+					"token" : '718e9db4376de7398635759a4c289e887bb94193',
+					"voice_samples" : [
+						{"wave" : base64_encode('./keyword_training/1.wav')},
+						{"wave" : base64_encode('./keyword_training/2.wav')},
+						{"wave" : base64_encode('./keyword_training/3.wav')}
+					]
+				}
+				var sdata = JSON.stringify(data);
+				var pdata = JSON.parse(sdata);
+				var formData = new FormData();
+				formData.append('name', temp_keyword);
+				formData.append('age_group', '20_29');
+				formData.append('gender', 'M');
+				formData.append('languange', 'it');
+				formData.append('microphone', 'macbook');
+				formData.append('token', '718e9db4376de7398635759a4c289e887bb94193');
+				formData.append('voice_samples', [
+						{"wave" : base64_encode('./keyword_training/1.wav')},
+						{"wave" : base64_encode('./keyword_training/2.wav')},
+						{"wave" : base64_encode('./keyword_training/3.wav')}
+					]);
+
+				console.log(pdata);
+
+				var oReq = new XMLHttpRequest();
+				oReq.open("POST", "https://snowboy.kitt.ai/api/v1/train/", true);
+				oReq.responseType = "arraybuffer";
+				oReq.setRequestHeader("Content-Type", "application/json");
+				
+				oReq.onload = function(oEvent) {
+				  var arrayBuffer = oReq.response;
+
+				  // if you want to access the bytes:
+				  var byteArray = new Uint8Array(arrayBuffer);
+				  // ...
+
+				  // If you want to use the image in your DOM:
+				  /*var blob = new Blob([arrayBuffer], {type: "image/png"});
+				  var url = URL.createObjectURL(blob);*/
+				  console.log(byteArray);
+				  fs.writeFileSync('./voice_models/' + temp_keyword + '.pmdl', byteArray);
+				  let rawdata = fs.readFileSync('./config/config.json');
+					let student = JSON.parse(rawdata);
+					student.hotwords.push({"file":  './voice_models/' + temp_keyword + '.pmdl', "hotword": temp_keyword});
+					fs.writeFileSync('./config/config.json', JSON.stringify(student));
+				  // whatever...
+				};
+				oReq.send(sdata);
+				
+
+				/*$.ajax({
+					url:'https://snowboy.kitt.ai/api/v1/train/',
+					type: 'POST',
+					data: sdata,
+					//processData: false,
+					contentType: 'application/json',
+					success: function(data) {
+						console.log(data);
+						const file = fs.writeFileSync('./voice_models/' + temp_keyword + '.pmdl', data);
+							let rawdata = fs.readFileSync('./config/config.json');
+							let student = JSON.parse(rawdata);
+							student.hotwords.push({"file":  './voice_models/' + temp_keyword + '.pmdl', "hotword": temp_keyword});
+							fs.writeFileSync('./config/config.json', JSON.stringify(student));
+						
+				
+						
+					},
+					error: function(err) {
+						console.log(err);
+					}
+				})*/
+			}
+			//send_keywords();
+
+		</script>

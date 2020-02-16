@@ -1,13 +1,3 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<style rel="stylesheet" type="text/css">
-		
-		</style>
-	</head>
-	<body>
-
-
 		<div class="container_vertical">
 			<div class='logo'>
 			</div>
@@ -27,16 +17,22 @@
 				<spacer></spacer>
 				
 				<div class='input_container'>
-					<input class='input' name='test'/>
+					<input id='input_name' class='input' name='test'/>
 				</div>
 			</div>
 
 
 			<div class='button_container'>
-				<button class='button'>AVANTI</button>
+				<button onclick='introduction_name()' class='button'>AVANTI</button>
 			</div>
 
 		</div>
 
-	</body>
-</html>
+		<script>
+			function introduction_name() {
+				let nome = document.getElementById('input_name').value;
+				set_name(nome);
+				load_screen('first_keyword', 'introduction');
+				
+			}
+		</script>

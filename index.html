@@ -48,7 +48,7 @@
 			.text_container {
 				text-align: center;
 				color: white;
-				width: 55%;
+				width: 60%;
 				align-self: center;
 			}
 			.text_title {
@@ -61,6 +61,12 @@
 			.input_container {
 				display: flex;
 				justify-content: center;
+			}
+			label{
+				width: 80%;
+				color: white;
+				align-self: center;
+				margin-bottom: 10px;
 			}
 			.input {
 				width: 80%;
@@ -113,13 +119,14 @@
 		</div>
 
 
+
+		<script>window.$ = window.jQuery = require('jquery');</script>
+
+
+
 		<script>
 
-
-
-
-
-
+			const ipcRenderer = require('electron').ipcRenderer;
 
 			function load_screen(screen, introduction) {
 				if(introduction != undefined) {
@@ -128,14 +135,11 @@
 					introduction = '';
 				}
 				var screen = './screens' + introduction + '/' + screen + '.html';
-				fetch(screen)
-					.then(data => data.text())
-					.then(html => document.getElementById('main').innerHTML = html);
+				$('#main').load(screen);
 			}
 
 
 			load_screen('name','introduction');
-
 
 			const fs = require('fs');
 			
@@ -145,6 +149,13 @@
 		let student = JSON.parse(rawdata);
 		console.log(student);
 		let test = student.data.findIndex(x => x.intent == intent);
+		let check = student.data[test].utterances.filter(function(item) {
+			return item == utterance;
+		});
+		console.log(check);
+		if(check.length >= 1) {
+			return;
+		}
 		student.data[test].utterances.push(utterance);
 		console.log(student.data[test].utterances);
 		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
@@ -162,10 +173,108 @@
 		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
 	}
 
-	addUtterance('agent.age','how old');
-	removeUtterance('agent.age', 'how old');
+	function addIntent(intent) {
+		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+		let student = JSON.parse(rawdata);
+		let check = student.data.filter(function(item) {
+			return item.intent == intent;
+		});
+		if(check.length >= 1) {
+			return;
+		}
+		student.data.push(new intentObject(intent));
+		console.log(student);
+		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
+	}
+
+	function removeIntent(intent) {
+		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+		let student = JSON.parse(rawdata);
+		let test = student.data.findIndex(x => x.intent == intent);
+		student.data = student.data.filter(function(item) {
+			return item.intent != intent;
+		});
+		console.log(student);
+		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
+	}
+
+	function intentObject(intent) {
+		this.intent = intent;
+		this.utterances = [];
+		this.answers = [];
+		return this;
+	}
+
+	function addAnswer(intent, answer){
+		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+		let student = JSON.parse(rawdata);
+		console.log(student);
+		let test = student.data.findIndex(x => x.intent == intent);
+		let check = student.data[test].answers.filter(function(item) {
+			return item == answer;
+		});
+		if(check.length >= 1) {
+			return;
+		}
+		student.data[test].answers.push(answer);
+		console.log(student.data[test].answer);
+		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
+	}
+
+	function removeAnswer(intent, answer) {
+		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+		let student = JSON.parse(rawdata);
+		console.log(student);
+		let test = student.data.findIndex(x => x.intent == intent);
+		student.data[test].answers = student.data[test].answers.filter(function(item) {
+			return item != utterance;
+		});
+		console.log(student.data[test].answers);
+		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
+	}
+
+	function set_name(nome) {
+		let rawdata = fs.readFileSync('./config/config.json');
+		let config = JSON.parse(rawdata);
+		config.nome = nome;
+		fs.writeFileSync('./config/config.json', JSON.stringify(config));
+		addIntent("companion.nome");
+		addUtterance('companion.nome', 'Come ti chiami');
+		addUtterance('companion.nome', 'Qual è il tuo nome');
+		addUtterance('companion.nome', 'Dimmi il tuo nome');
+		addUtterance('companion.nome', 'Nome');
+		addAnswer('companion.nome', 'Il mio nome è ' + nome);
+		addAnswer('companion.nome', nome);
+		addAnswer('companion.nome', 'Mi chiamo ' + nome);
+	}
+
+	var temp_keyword = 'Hey Mario';
+	var rec_number = 1;
+function get_name() {
+				let rawdata = fs.readFileSync('./config/config.json');
+				let config = JSON.parse(rawdata);
+				return config.nome;
+			}
+
+		function populate() {
+			$('.get_name').html(get_name());
+			$('.get_keyword').html(temp_keyword);
+			$('.get_rec_number').html(rec_number);
+		}
 
 
+	function base64_encode(file) {
+	    // read binary data
+	    var bitmap = fs.readFileSync(file);
+	    console.log(bitmap);
+	    // convert binary data to base64 encoded string
+	    return Buffer.from(bitmap).toString('base64');
+	}
+	//addIntent("ciao.ciao");
+	//addUtterance('ciao.ciao','Come va?');
+	//removeUtterance('ciao.ciao', 'Come va?');
+	//removeIntent("ciao.ciao");
+	removeIntent("companion.nome");
 		</script>
 	</body>
 </html>

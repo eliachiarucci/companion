@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron')
-
+const ipcMain = require('electron').ipcMain;
 function createWindow () {
   // Crea la finestra del browser
   const win = new BrowserWindow({
@@ -67,16 +67,18 @@ const client2 = new textToSpeech.TextToSpeechClient({
 
 const { dockStart } = require('@nlpjs/basic');
 
-(async () => {
+async function test(frase) {
   const dock = await dockStart({ use: ['Basic']});
   const nlp = dock.get('nlp');
   // Adds the utterances and intents for the NLP
   await nlp.addCorpus('./nlp_corpuses/corpus.json');
   await nlp.train();  // Train also the NLG
 
-  const response = await nlp.process('en', 'Who are you');
+  const response = await nlp.process('it', frase);
   console.log(response);
-})();
+};
+
+test('come va');
 
 async function quickStart(text) {
 
@@ -100,12 +102,14 @@ async function quickStart(text) {
 })
 }
 
-const hotwords = [
-    {file: './voice_models/ei mario.pmdl', hotword: 'ei mario'},
-    {file: './voice_models/senti mario.pmdl', hotword: 'senti mario'},
-    ]
+
+let rawdata = fs.readFileSync('./config/config.json');
+let config = JSON.parse(rawdata);
+
+var hotwords = config.hotwords;
 
 const language = 'it-IT';
+
 
 const sonus = Sonus.init({ hotwords, language, recordProgram: 'rec' }, client);
 Sonus.start(sonus)
@@ -139,3 +143,34 @@ sonus.on('final-result', result => {
     Sonus.stop()
   }
 })
+
+const recorder = require('node-record-lpcm16');
+
+
+
+
+ipcMain.on('start_recording', function(event, rec_number) {
+  start_recording(rec_number);
+})
+ipcMain.on('stop_recording', function() {
+  stop_recording();
+})
+
+var recording;
+
+// Creates and starts the recording process.
+function start_recording(rec_number) {
+  console.log(rec_number)
+  console.log('START');
+  const file = fs.createWriteStream('./keyword_training/' + rec_number + '.wav', { encoding: 'binary' })
+  recording = recorder.record({
+  sampleRate: 44100
+  })
+  recording.stream()
+  .pipe(file)
+}
+// Stops and removes the recording process.
+function stop_recording() {
+  console.log('STOP');
+  recording.stop();
+}

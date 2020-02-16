@@ -1,0 +1,48 @@
+		<div class="container_vertical">
+			<div class='logo'>
+			</div>
+
+
+			<div class='container_body'>
+				<div class='text_container'>
+					<div class='text_title'>
+						
+					</div>
+
+					<div class='text_corpus'>
+						Imposta la tua prima keyword. <br>
+						Fai capire a <a class='get_name'></a> quando lo stai chiamando.
+					</div>
+				</div>
+
+				<spacer></spacer>
+				
+				<div class='input_container' style='flex-direction: column'>
+					<label for='input_name'>
+						"hey <a class='get_name'></a>"
+					</label>
+					<label for='input_name'>
+						"ciao <a class='get_name'></a>"
+					</label>
+					<input id='input_keyword' class='input' name='test'/>
+				</div>
+			</div>
+
+
+			<div class='button_container'>
+				<button onclick='introduction_keyword()' class='button'>AVANTI</button>
+			</div>
+
+		</div>
+
+		<script>
+
+			populate();
+			
+
+				function introduction_keyword(keyword) {
+					temp_keyword = document.getElementById('input_keyword').value;
+					load_screen('train_keyword', 'introduction');
+				}
+
+		</script>
