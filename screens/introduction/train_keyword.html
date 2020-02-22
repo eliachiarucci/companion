@@ -1,3 +1,6 @@
+		<div id='spinner' class="lds-container">
+<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
 		<div class="container_vertical">
 			<div class='logo'>
 			</div>
@@ -20,9 +23,9 @@
 				<div class='input_container' style='flex-direction: column'>
 					<div style='display:flex; flex-direction: column; justify-content: center; border: 3px solid white; border-radius: 50%; height: 135px; width: 135px; align-self: center'>
 						<div style='width: 50%; display: flex; flex-direction: row; align-self: center; justify-content: space-around;'>
-							<div style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
-							<div style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
-							<div style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
+							<div id='sample_1' style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
+							<div id='sample_2' style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
+							<div id='sample_3' style='height: 30px; width: 15px; border-radius: 5px; background-color: white;'></div>
 						</div>
 					</div>
 				</div>
@@ -50,14 +53,20 @@
 				ipcRenderer.send('stop_recording');
 				if(rec_number < 3) {
 					rec_number = rec_number + 1;
-				} else {
+					document.getElementById('sample_'+(rec_number)).style.backgroundColor = 'rgb(0,200,100)';
+				} 
+				if(rec_number == 3) {
+					document.getElementById('sample_'+(rec_number)).style.backgroundColor = 'rgb(0,200,100)';
 					send_keywords();
 				}
+					
+				
 				
 				populate();
 			})
 
 			function send_keywords() {
+				document.getElementById('spinner').style.display = 'flex';
 				var data = {
 					"name": temp_keyword,
 					"age_group" : '20_29',
@@ -66,9 +75,9 @@
 					"microphone": 'macbook',
 					"token" : '718e9db4376de7398635759a4c289e887bb94193',
 					"voice_samples" : [
+						{"wave" : base64_encode('./keyword_training/0.wav')},
 						{"wave" : base64_encode('./keyword_training/1.wav')},
-						{"wave" : base64_encode('./keyword_training/2.wav')},
-						{"wave" : base64_encode('./keyword_training/3.wav')}
+						{"wave" : base64_encode('./keyword_training/2.wav')}
 					]
 				}
 				var sdata = JSON.stringify(data);
@@ -81,9 +90,9 @@
 				formData.append('microphone', 'macbook');
 				formData.append('token', '718e9db4376de7398635759a4c289e887bb94193');
 				formData.append('voice_samples', [
+						{"wave" : base64_encode('./keyword_training/0.wav')},
 						{"wave" : base64_encode('./keyword_training/1.wav')},
-						{"wave" : base64_encode('./keyword_training/2.wav')},
-						{"wave" : base64_encode('./keyword_training/3.wav')}
+						{"wave" : base64_encode('./keyword_training/2.wav')}
 					]);
 
 				console.log(pdata);
@@ -95,7 +104,7 @@
 				
 				oReq.onload = function(oEvent) {
 				  var arrayBuffer = oReq.response;
-
+				  console.log(new TextDecoder().decode(arrayBuffer));
 				  // if you want to access the bytes:
 				  var byteArray = new Uint8Array(arrayBuffer);
 				  // ...
@@ -109,8 +118,12 @@
 					let student = JSON.parse(rawdata);
 					student.hotwords.push({"file":  './voice_models/' + temp_keyword + '.pmdl', "hotword": temp_keyword});
 					fs.writeFileSync('./config/config.json', JSON.stringify(student));
+					document.getElementById('spinner').style.display = 'none';
+					ipcRenderer.send('load_sonus');
+					load_screen('first_command','introduction');
 				  // whatever...
 				};
+
 				oReq.send(sdata);
 				
 

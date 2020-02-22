@@ -48,6 +48,7 @@ app.on('activate', () => {
 const Sonus = require('sonus')
 var util = require('util');
 var fs = require('fs');
+var path = require('path');
 const fetch = require('node-fetch');
 var player = require('play-sound')(opts = {})
 const speech = require('@google-cloud/speech')
@@ -62,9 +63,48 @@ const client2 = new textToSpeech.TextToSpeechClient({
 });
 
 
+function reset_keyword() {
+    let rawdata = fs.readFileSync('./config/config.json');
+    let config = JSON.parse(rawdata);
+    config.hotwords = [];
+    fs.writeFileSync('./config/config.json', JSON.stringify(config));
+    var directory = './voice_models';
+
+    fs.readdir(directory, (err, files) => {
+      if (err) throw err;
+
+      for (const file of files) {
+        fs.unlink(path.join(directory, file), err => {
+          if (err) throw err;
+        });
+      }
+    });
 
 
+    directory = './keyword_training';
 
+    fs.readdir(directory, (err, files) => {
+      if (err) throw err;
+
+      for (const file of files) {
+        fs.unlink(path.join(directory, file), err => {
+          if (err) throw err;
+        });
+      }
+    });
+
+  }
+
+ reset_keyword();
+
+function reset_corpus() {
+    let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
+    let config = JSON.parse(rawdata);
+    config.data = [];
+    fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(config));
+}
+
+ reset_corpus();
 const { dockStart } = require('@nlpjs/basic');
 
 async function test(frase) {
@@ -76,9 +116,10 @@ async function test(frase) {
 
   const response = await nlp.process('it', frase);
   console.log(response);
+  return(response);
 };
 
-test('come va');
+//test('come va');
 
 async function quickStart(text) {
 
@@ -103,15 +144,18 @@ async function quickStart(text) {
 }
 
 
+var sonus;
+
+function load_sonus() {
+
 let rawdata = fs.readFileSync('./config/config.json');
 let config = JSON.parse(rawdata);
-
 var hotwords = config.hotwords;
-
 const language = 'it-IT';
+console.log(hotwords);
 
-
-const sonus = Sonus.init({ hotwords, language, recordProgram: 'rec' }, client);
+if(hotwords != "" | undefined) {
+sonus = Sonus.init({ hotwords, language, recordProgram: 'rec' }, client);
 Sonus.start(sonus)
 //console.log('Say "' + hotwords[0].hotword + '"...')
 console.log('---');
@@ -127,22 +171,24 @@ sonus.on('hotword', (index, keyword) => {
 
 sonus.on('error', error => console.log('error', error))
 
-sonus.on('final-result', result => {
+sonus.on('final-result', async (result) => {
   console.log("Final", result)
-  fetch('https://api.dialogflow.com/v1/query?v=20150910&contexts=shop&lang=en&query='+result+'&sessionId=12345&timezone=Europe/Rome', {headers: {
-      'Authorization': 'Bearer 3232e11bb950433a9953c53fd2289119'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },})
-.then(res => res.json())
-.then(json => {
-	quickStart(json.result.fulfillment.speech);
-	sonus.trigger('ei mario');
-});
+  let nlp_answer = await test(result);
+	quickStart(nlp_answer.answer);
+  
+	//sonus.trigger('ei mario');
+
   //quickStart(result);
-  if (result.includes("stop")) {
+ /* if (result.includes("stop")) {
     Sonus.stop()
-  }
+  } */
 })
+}
+}
+
+
+
+load_sonus();
 
 const recorder = require('node-record-lpcm16');
 
@@ -174,3 +220,11 @@ function stop_recording() {
   console.log('STOP');
   recording.stop();
 }
+
+ipcMain.on('load_sonus', function() {
+  load_sonus();
+})
+
+ipcMain.on('trigger_sonus', function(event, keyword) {
+  sonus.trigger(keyword);
+})

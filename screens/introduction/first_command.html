@@ -1,0 +1,52 @@
+		<div class="container_vertical">
+			<div class='logo'>
+			</div>
+
+
+			<div class='container_body'>
+				<div class='text_container'>
+					<div class='text_title'>
+						
+					</div>
+
+					<div class='text_corpus'>
+						Insegna a <a class='get_name'></a> il suo primo comando.
+					</div>
+				</div>
+
+				<spacer></spacer>
+				
+				<div class='input_container' style='flex-direction: column'>
+					<label for='input_question'>
+						Quando dico
+					</label>
+					<input id='input_question' class='input' name='test' style='text-align: left;' />
+					<br>
+					<label for='input_answer'>
+						<a class='get_name'></a> risponde
+					</label>
+					<input id='input_answer' class='input' name='test' style='text-align: left;' />
+				</div>
+			</div>
+
+
+			<div class='button_container'>
+				<button onclick='insert_first_commands()' class='button'>AVANTI</button>
+			</div>
+
+		</div>
+
+		<script>
+
+			populate();
+
+				function insert_first_commands() {
+					var question = document.getElementById('input_question').value;
+					var answer = document.getElementById('input_answer').value;
+					addIntent("generali.ciao");
+					addUtterance('generali.ciao', question);
+					addAnswer('generali.ciao', answer);
+					load_screen('personalize','introduction');
+				}
+
+		</script>

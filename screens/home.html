@@ -1,0 +1,48 @@
+		<div class="container_vertical" style="justify-content: normal">
+			<div class='logo'>
+			</div>
+
+
+			<div class='container_body' style="margin-top: 80px">
+				<div class='text_container'>
+					<div class='text_title'>
+						
+					</div>
+
+					<div class='text_corpus' style="font-size: 28px">
+						Dì "<a class='get_keyword'></a>"
+					</div>
+					<br>
+					<div class='text_corpus'>
+						Oppure
+					</div>
+					<br>
+					<button class='button' onclick="trigger_sonus()" style="width: 150px">
+						CLICCA
+					</button>
+
+				</div>
+
+				<spacer></spacer>
+				
+				
+
+		</div>
+
+		<script>
+
+			populate();
+
+				function insert_first_commands() {
+					var question = document.getElementById('input_question').value;
+					var answer = document.getElementById('input_answer').value;
+					addIntent("generali.ciao");
+					addUtterance('generali.ciao', question);
+					addAnswer('generali.ciao', answer);
+					load_screen('personalize','introduction');
+				}
+
+				function trigger_sonus() {
+					ipcRenderer.send('trigger_sonus', get_keyword());
+				}
+		</script>
