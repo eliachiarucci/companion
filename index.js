@@ -1,5 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 const ipcMain = require('electron').ipcMain;
+
+
 function createWindow () {
   // Crea la finestra del browser
   const win = new BrowserWindow({
@@ -68,26 +70,28 @@ function reset_keyword() {
     let config = JSON.parse(rawdata);
     config.hotwords = [];
     fs.writeFileSync('./config/config.json', JSON.stringify(config));
-    var directory = './voice_models';
+    var models_directory = path.resolve(__dirname, 'voice_models');
 
-    fs.readdir(directory, (err, files) => {
+    fs.readdir(models_directory, (err, files) => {
       if (err) throw err;
 
-      for (const file of files) {
-        fs.unlink(path.join(directory, file), err => {
+      for (let file of files) {
+        
+        fs.unlink(path.join(models_directory, file), err => {
           if (err) throw err;
         });
       }
     });
 
 
-    directory = './keyword_training';
+    var training_directory = path.resolve(__dirname, 'keyword_training');
 
-    fs.readdir(directory, (err, files) => {
+    fs.readdir(training_directory, (err, files1) => {
       if (err) throw err;
 
-      for (const file of files) {
-        fs.unlink(path.join(directory, file), err => {
+      for (let file1 of files1) {
+        console.log(file1);
+        fs.unlink(path.join(training_directory, file1), err => {
           if (err) throw err;
         });
       }
