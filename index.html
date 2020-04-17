@@ -285,17 +285,17 @@
 	function addUtterance(intent, utterance) {
 		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
 		let student = JSON.parse(rawdata);
-		console.log(student);
+		//console.log(student);
 		let test = student.data.findIndex(x => x.intent == intent);
 		let check = student.data[test].utterances.filter(function(item) {
 			return item == utterance;
 		});
-		console.log(check);
+		//console.log(check);
 		if(check.length >= 1) {
 			return;
 		}
 		student.data[test].utterances.push(utterance);
-		console.log(student.data[test].utterances);
+		//console.log(student.data[test].utterances);
 		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
 	}
 
@@ -321,7 +321,7 @@
 			return;
 		}
 		student.data.push(new intentObject(intent));
-		console.log(student);
+		//console.log(student);
 		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
 	}
 
@@ -346,7 +346,7 @@
 	function addAnswer(intent, answer){
 		let rawdata = fs.readFileSync('./nlp_corpuses/corpus.json');
 		let student = JSON.parse(rawdata);
-		console.log(student);
+		//console.log(student);
 		let test = student.data.findIndex(x => x.intent == intent);
 		let check = student.data[test].answers.filter(function(item) {
 			return item == answer;
@@ -355,7 +355,7 @@
 			return;
 		}
 		student.data[test].answers.push(answer);
-		console.log(student.data[test].answer);
+		//console.log(student.data[test].answer);
 		fs.writeFileSync('./nlp_corpuses/corpus.json', JSON.stringify(student));
 	}
 
@@ -418,7 +418,7 @@ function get_name() {
 	function base64_encode(file) {
 	    // read binary data
 	    var bitmap = fs.readFileSync(file);
-	    console.log(bitmap);
+	    //console.log(bitmap);
 	    // convert binary data to base64 encoded string
 	    return Buffer.from(bitmap).toString('base64');
 	}

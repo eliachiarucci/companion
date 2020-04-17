@@ -90,7 +90,7 @@ function reset_keyword() {
       if (err) throw err;
 
       for (let file1 of files1) {
-        console.log(file1);
+        //console.log(file1);
         fs.unlink(path.join(training_directory, file1), err => {
           if (err) throw err;
         });
